@@ -1,0 +1,21 @@
+-----Questao 2
+
+DROP FUNCTION IF EXISTS dobrar_preco_locacao(nome_filme VARCHAR);
+
+CREATE OR REPLACE FUNCTION dobrar_preco_locacao(nome_filme VARCHAR)
+RETURNS NUMERIC AS $$
+DECLARE
+    preco_sugerido numeric;
+    cursor_filmes CURSOR FOR SELECT preco_sugerido_locacao FROM filme WHERE nome ILIKE '%' || nome_filme || '%';
+BEGIN
+    OPEN cursor_filmes;
+    FETCH NEXT FROM cursor_filmes INTO preco_sugerido;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Filme não encontrado na busca.';
+    END IF;
+    CLOSE cursor_filmes;
+    RETURN preco_sugerido * 2;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM dobrar_preco_locacao('amor alem da vida');
